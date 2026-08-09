@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCart } from '../hooks/useCart';
-import { useTelegram } from '../hooks/useTelegram';
 import { productService } from '../services/productService';
 import { getProductImage } from '../utils/imageHelper';
 import { 
@@ -9,33 +8,29 @@ import {
   FaStar, 
   FaStarHalfAlt, 
   FaRegStar, 
-  FaTelegram, 
   FaMinus, 
   FaPlus, 
   FaArrowLeft, 
   FaHeart, 
   FaShare,
-  FaTruck,
-  FaShieldAlt,
-  FaCheckCircle,
-  FaWhatsapp
+  FaWhatsapp,
+  FaTelegram
 } from 'react-icons/fa';
 import toast from 'react-hot-toast';
 import LoadingSpinner from '../components/common/LoadingSpinner';
 import ErrorMessage from '../components/common/ErrorMessage';
+import { telegramService } from '../services/telegramService';
 
 const ProductDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addToCart } = useCart();
-  const { sendProductInquiry } = useTelegram();
   
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
-  const [isInquiring, setIsInquiring] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
@@ -81,24 +76,10 @@ const ProductDetail = () => {
     }
   };
 
-  const handleSendToTelegram = async () => {
+  const handleSendToTelegram = () => {
     if (!product) return;
-    
-    setIsInquiring(true);
-    try {
-      const userInfo = {
-        name: 'Customer',
-        phone: 'N/A',
-        email: 'N/A'
-      };
-      
-      await sendProductInquiry(product, userInfo);
-      toast.success('Inquiry sent to Telegram!');
-    } catch (error) {
-      toast.error('Failed to send inquiry');
-    } finally {
-      setIsInquiring(false);
-    }
+    telegramService.sendProductInquiry(product);
+    toast.success('Opening Telegram...');
   };
 
   const handleShare = () => {
@@ -151,9 +132,7 @@ const ProductDetail = () => {
   const hasHalfStar = rating % 1 >= 0.5;
   const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
 
-  // Get the correct image URL using the helper
   const mainImage = getProductImage(image_url);
-
   const isInStock = stock_quantity > 0;
   const isLowStock = stock_quantity > 0 && stock_quantity < 10;
 
@@ -168,28 +147,9 @@ const ProductDetail = () => {
         <span>Back to Products</span>
       </button>
 
-      {/* Breadcrumb */}
-      <nav className="text-sm text-gray-500 mb-6">
-        <ol className="flex items-center space-x-2">
-          <li>
-            <button onClick={() => navigate('/')} className="hover:text-primary-600">
-              Home
-            </button>
-          </li>
-          <li>/</li>
-          <li>
-            <button onClick={() => navigate('/products')} className="hover:text-primary-600">
-              Products
-            </button>
-          </li>
-          <li>/</li>
-          <li className="text-gray-900 font-medium truncate">{name}</li>
-        </ol>
-      </nav>
-
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-8">
-          {/* Product Image - Single Image Only */}
+          {/* Product Image */}
           <div>
             <div className="relative bg-gray-100 rounded-xl overflow-hidden h-80 md:h-96 lg:h-[500px]">
               <img
@@ -197,7 +157,6 @@ const ProductDetail = () => {
                 alt={name}
                 className="w-full h-full object-contain"
                 onError={(e) => {
-                  console.error('Image failed to load:', mainImage);
                   e.target.src = 'https://via.placeholder.com/600x400/2563eb/FFFFFF?text=Gadget+Cambodia';
                 }}
               />
@@ -211,23 +170,19 @@ const ProductDetail = () => {
                   Only {stock_quantity} left!
                 </div>
               )}
-             
             </div>
           </div>
 
           {/* Product Info */}
           <div className="flex flex-col">
-            {/* Category */}
             {category && (
               <span className="text-sm text-primary-600 font-medium uppercase tracking-wider">
                 {category.name}
               </span>
             )}
 
-            {/* Name */}
             <h1 className="text-3xl font-bold text-gray-900 mt-2">{name}</h1>
 
-            {/* Rating */}
             <div className="flex items-center space-x-3 mt-3">
               <div className="flex text-yellow-400">
                 {[...Array(fullStars)].map((_, i) => <FaStar key={i} size={18} />)}
@@ -239,37 +194,20 @@ const ProductDetail = () => {
               <span className="text-sm text-gray-600">245 reviews</span>
             </div>
 
-            {/* Price */}
             <div className="mt-4">
               <span className="text-4xl font-bold text-primary-600">
                 ${price.toFixed(2)}
               </span>
-              {product.original_price && (
-                <span className="text-lg text-gray-400 line-through ml-3">
-                  ${product.original_price.toFixed(2)}
-                </span>
-              )}
             </div>
 
-            {/* Stock Status */}
             <div className="mt-2 flex items-center gap-3">
               {isInStock ? (
-                <>
-                  <span className="text-green-600 font-medium flex items-center gap-1">
-                    <FaCheckCircle className="text-green-500" /> In Stock
-                  </span>
-                  {isLowStock && (
-                    <span className="text-orange-500 text-sm font-medium">
-                      ⚡ Only {stock_quantity} left
-                    </span>
-                  )}
-                </>
+                <span className="text-green-600 font-medium">✅ In Stock</span>
               ) : (
                 <span className="text-red-600 font-medium">Out of Stock</span>
               )}
             </div>
 
-            {/* Description */}
             <div className="mt-6">
               <h3 className="text-sm font-semibold text-gray-700 mb-2">Description</h3>
               <p className="text-gray-600 leading-relaxed">
@@ -277,10 +215,6 @@ const ProductDetail = () => {
               </p>
             </div>
 
-            {/* Features */}
-           
-
-            {/* Quantity Selector */}
             {isInStock && (
               <div className="flex items-center space-x-4 mt-6">
                 <span className="text-gray-700 font-medium">Quantity:</span>
@@ -311,7 +245,6 @@ const ProductDetail = () => {
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <button
                 onClick={handleAddToCart}
@@ -332,10 +265,15 @@ const ProductDetail = () => {
                 </span>
               </button>
 
-             
+              <button
+                onClick={handleSendToTelegram}
+                className="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all duration-200 font-semibold flex items-center justify-center space-x-2 shadow-md hover:shadow-lg"
+              >
+                <FaTelegram />
+                <span>Inquire on Telegram</span>
+              </button>
             </div>
 
-            {/* Additional Actions */}
             <div className="flex items-center space-x-6 mt-6 pt-6 border-t border-gray-200">
               <button
                 onClick={handleWishlist}
@@ -364,7 +302,6 @@ const ProductDetail = () => {
               </a>
             </div>
 
-            {/* Product Meta */}
             <div className="mt-6 pt-6 border-t border-gray-200 text-sm text-gray-500 space-y-2">
               <p>SKU: {`GC-${String(product.id || 0).padStart(6, '0')}`}</p>
               <p>Category: {category?.name || 'Uncategorized'}</p>

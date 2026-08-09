@@ -9,7 +9,6 @@ import OrderConfirmation from '../components/checkout/OrderConfirmation';
 import toast from 'react-hot-toast';
 
 const Checkout = () => {
-  const navigate = useNavigate();
   const { cartItems, totalPrice, clearCart } = useCart();
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -24,14 +23,6 @@ const Checkout = () => {
 
   const handleFormChange = (name, value) => {
     setFormData(prev => ({ ...prev, [name]: value }));
-  };
-
-  const handleSendToTelegram = () => {
-    if (cartItems.length === 0) {
-      toast.error('Your cart is empty!');
-      return;
-    }
-    telegramService.sendCartToTelegram(cartItems);
   };
 
   const handleSubmit = async () => {
@@ -112,6 +103,7 @@ const Checkout = () => {
           <OrderSummary
             cartItems={cartItems}
             totalPrice={totalPrice}
+            customerInfo={formData}
           />
         </div>
       </div>

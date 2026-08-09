@@ -111,9 +111,13 @@ export const getCategoryImage = (imagePath) => {
   return `${BASE_URL}/${imagePath}`;
 };
 
-export default {
+// Create the imageHelper object
+const imageHelper = {
   getImageUrl,
   getProductImage,
   getBannerImage,
   getCategoryImage,
 };
+
+// Export as default
+export default imageHelper;
