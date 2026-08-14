@@ -23,7 +23,7 @@ export const CartProvider = ({ children }) => {
     }
   }, [])
 
-  // Update totals function - defined before useEffect that uses it
+  // Update totals function - defined BEFORE useEffect that uses it
   const updateTotals = useCallback(() => {
     const items = cartItems.reduce((acc, item) => acc + item.quantity, 0)
     const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)

@@ -52,7 +52,6 @@ const Checkout = () => {
 
       const response = await orderService.createOrder(orderPayload);
       
-      // Send to Telegram
       telegramService.sendOrderConfirmation({
         ...response,
         ...orderPayload,

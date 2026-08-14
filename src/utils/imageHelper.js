@@ -81,7 +81,6 @@ export const getCategoryImage = (imagePath) => {
   return `${BASE_URL}/${imagePath}`;
 };
 
-// Export as default with named exports
 const imageHelper = {
   getImageUrl,
   getProductImage,
