@@ -138,7 +138,6 @@ const ProductDetail = () => {
 
   return (
     <div className="pt-20 container-custom py-12">
-      {/* Back Button */}
       <button
         onClick={() => navigate(-1)}
         className="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors duration-200 mb-6"
@@ -149,7 +148,6 @@ const ProductDetail = () => {
 
       <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 md:p-8">
-          {/* Product Image */}
           <div>
             <div className="relative bg-gray-100 rounded-xl overflow-hidden h-80 md:h-96 lg:h-[500px]">
               <img
@@ -173,7 +171,6 @@ const ProductDetail = () => {
             </div>
           </div>
 
-          {/* Product Info */}
           <div className="flex flex-col">
             {category && (
               <span className="text-sm text-primary-600 font-medium uppercase tracking-wider">
