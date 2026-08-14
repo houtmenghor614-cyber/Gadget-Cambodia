@@ -4,14 +4,17 @@ import { getBannerImage } from '../../utils/imageHelper';
 const BannerSlide = ({ banner }) => {
   const { title, subtitle, image_url, link_url } = banner;
 
+  const imageSrc = getBannerImage(image_url);
+
   return (
     <div className="relative h-64 md:h-96 rounded-xl overflow-hidden">
       <img
-        src={getBannerImage(image_url)}
+        src={imageSrc}
         alt={title}
         className="w-full h-full object-cover"
         onError={(e) => {
-          e.target.src = 'https://via.placeholder.com/1200x400?text=Gadget+Cambodia';
+          console.error('Banner image failed to load:', imageSrc);
+          e.target.src = 'https://via.placeholder.com/1200x400/2563eb/FFFFFF?text=Gadget+Cambodia';
         }}
       />
       <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent flex items-center">
