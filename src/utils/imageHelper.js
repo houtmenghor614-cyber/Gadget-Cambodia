@@ -81,10 +81,12 @@ export const getCategoryImage = (imagePath) => {
   return `${BASE_URL}/${imagePath}`;
 };
 
-// Export all functions
-export default {
+// Export as default with named exports
+const imageHelper = {
   getImageUrl,
   getProductImage,
   getBannerImage,
   getCategoryImage,
 };
+
+export default imageHelper;

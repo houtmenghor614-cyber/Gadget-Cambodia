@@ -23,18 +23,19 @@ export const CartProvider = ({ children }) => {
     }
   }, [])
 
-  // Save cart to localStorage whenever it changes
-  useEffect(() => {
-    localStorage.setItem('gadgetCart', JSON.stringify(cartItems))
-    updateTotals()
-  }, [cartItems, updateTotals]) // Added updateTotals to dependency array
-
+  // Update totals function - defined before useEffect that uses it
   const updateTotals = useCallback(() => {
     const items = cartItems.reduce((acc, item) => acc + item.quantity, 0)
     const total = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
     setTotalItems(items)
     setTotalPrice(total)
   }, [cartItems])
+
+  // Save cart to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('gadgetCart', JSON.stringify(cartItems))
+    updateTotals()
+  }, [cartItems, updateTotals])
 
   const addToCart = useCallback((product, quantity = 1) => {
     setCartItems(prevItems => {
